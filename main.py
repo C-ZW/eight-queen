@@ -11,11 +11,11 @@ class Eight_queens:
         board = self.init_board(height, width)
 
         for _ in range(max_step):
-            queen_position = self.generate_queen_positions(board, power)
+            queen_positions = self.generate_queen_positions(board, power)
 
-            if len(queen_position) > max_size:
-                max_size = len(queen_position)
-                queen_pos = queen_position
+            if len(queen_positions) > max_size:
+                max_size = len(queen_positions)
+                queen_pos = queen_positions
 
             if len(queen_pos) == height * width:
                 break
