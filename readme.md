@@ -7,7 +7,7 @@
     2. Queen attack range
     
     Goal:
-    Find maximun number of queens can be placed on board    
+    Find maximum number of queens can be placed on board    
 
 
 ## Implement alogorithm
