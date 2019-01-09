@@ -17,4 +17,4 @@
 3. Calculate influence position as another set
 4. Use set difference
 5. go back 2 util size of board is equal to 0
-6. Output how many iteration between 2 to 5(one iteration choice one queen)
+6. Output how many iteration between step 2 to 5(one iteration choice one queen)
