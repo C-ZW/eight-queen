@@ -5,10 +5,11 @@ import numpy as np
 
 
 class Eight_queens:
-    def calculate_max_queen_size(self, height, width, power, max_step):
+    def calculate_max_queen_size(self, height, width,
+                                 power, max_step, init_queens=None):
         max_size = 0
         queen_pos = None
-        board = self.init_board(height, width)
+        board = self.init_board(height, width, power, init_queens)
 
         for _ in range(max_step):
             queen_positions = self.generate_queen_positions(board, power)
@@ -22,18 +23,24 @@ class Eight_queens:
 
         return queen_pos
 
-    def init_board(self, height, width):
-        board = []
+    def init_board(self, height, width, power, init_queens):
+        board = set()
 
         for x in range(width):
             for y in range(height):
-                board.append((x, y))
+                board.add((x, y))
 
-        return set(board)
+        if init_queens is not None:
+            for queen_position in init_queens:
+                invalid_points = self.get_queen_influence_positions(
+                    queen_position, power)
+                board = board.difference(invalid_points)
+
+        return board
 
     def generate_queen_positions(self, board, power):
         positions = set()
-
+        
         while len(board) != 0:
             choiced = random.sample(board, 1)
             queen_position = choiced[0]  # random.sample return array
