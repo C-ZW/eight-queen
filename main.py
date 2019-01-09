@@ -1,110 +1,88 @@
-import numpy as np
-import random
 import sys
 import time
+import random
+import numpy as np
 
 
 class Eight_queens:
-    def __init__(self):
-        pass
+    def calculate_max_queen_size(self, height, width, power, max_step):
+        max_size = 0
+        queen_pos = None
+        board = self.init_board(height, width)
 
-    def calculate_max_queens_size(self, height, width, queen_size,
-                                  start_queen_size=1, max_step=100, exec_all=False, power=None):
+        for _ in range(max_step):
+            queen_position = self.generate_queen_positions(board, power)
 
-        max_queen_size = 0
+            if len(queen_position) > max_size:
+                max_size = len(queen_position)
+                queen_pos = queen_position
 
-        for current_queen_size in range(start_queen_size, queen_size + 1):
-            for step in range(max_step):
-                queen_positions = self.generate_queen_positions(
-                    height, width, current_queen_size)
+            if len(queen_pos) == height * width:
+                break
 
-                if self.is_valid_board(height, width, current_queen_size, queen_positions, power=power):
-                    max_queen_size = len(queen_positions)
-                    print(queen_positions)
-                    break
+        return queen_pos
 
-            if step == (max_step - 1) and exec_all == False:
-                return max_queen_size
+    def init_board(self, height, width):
+        board = []
 
-        return max_queen_size
+        for x in range(width):
+            for y in range(height):
+                board.append((x, y))
 
-    def generate_queen_positions(self, height, width, queen_size):
+        return set(board)
+
+    def generate_queen_positions(self, board, power):
         positions = set()
 
-        for _ in range(queen_size):
-            x = random.randint(0, width)
-            y = random.randint(0, height)
-            positions.add((x, y))
+        while len(board) != 0:
+            choiced = random.sample(board, 1)
+            queen_position = choiced[0]  # random.sample return array
+
+            influence_positions = self.get_queen_influence_positions(
+                queen_position, power)
+            board = board.difference(influence_positions)
+            positions.add(queen_position)
 
         return positions
-
-    def is_valid_board(self, height, width, queen_size,
-                       queen_positions, power):
-        '''
-            power default is min(height, width)
-        '''
-
-        if len(queen_positions) != queen_size:
-            return False
-
-        if power is None:
-            power = min([height, width])
-
-        invalid_positions = set(
-            self.get_influence_positions(queen_positions, power))
-
-        x = 0
-        y = 1
-        for queen_pos in queen_positions:
-            if (queen_pos[x], queen_pos[y]) in invalid_positions:
-                return False
-
-        return True
-
-    def get_influence_positions(self, positions, power):
-        influence_positions = set()
-
-        for i in positions:
-            point = i
-            for p in self.get_queen_influence_positions(point, power):
-                influence_positions.add(p)
-
-        return influence_positions
 
     def get_queen_influence_positions(self, point, power):
         x = 0
         y = 1
 
         influence_positions = []
+        for i in range(-power, power + 1):
+            row = (point[x] + i, point[y])
+            column = (point[x], point[y] + i)
+            right_skew = (point[x] - i, point[y] + i)
+            left_skew = (point[x] + i, point[y] + i)
 
-        for p in range(1, power + 1):
-            influence_left = (point[x] - p, point[y])
-            influence_right = (point[x] - p, point[y])
-            influence_top = (point[x], point[y] + p)
-            influence_bottom = (point[x], point[y] - p)
-            influence_skew_left_up = (point[x] - p, point[y] + p)
-            influence_skew_left_down = (point[x] + p, point[y] - p)
-            influence_skew_right_up = (point[x] + p, point[y] + p)
-            influence_skew_right_down = (point[x] - p, point[y] - p)
-
-            influence_positions.append(influence_left)
-            influence_positions.append(influence_right)
-            influence_positions.append(influence_top)
-            influence_positions.append(influence_bottom)
-            influence_positions.append(influence_skew_left_up)
-            influence_positions.append(influence_skew_left_down)
-            influence_positions.append(influence_skew_right_up)
-            influence_positions.append(influence_skew_right_down)
+            influence_positions.append(row)
+            influence_positions.append(column)
+            influence_positions.append(right_skew)
+            influence_positions.append(left_skew)
 
         return influence_positions
 
 
 if __name__ == '__main__':
-    print('starting')
+    BOARD_HEIGHT = 8
+    BOARD_WIDTH = 8
+    POWER = 7
+    MAX_STEP = 100
+
+    print('Board size: ' + str(BOARD_HEIGHT) + ' * ' + str(BOARD_WIDTH))
+    print('Power: ' + str(POWER))
+    print('Max step: ' + str(MAX_STEP))
+
     eq = Eight_queens()
     start_time = time.time()
 
-    print(eq.calculate_max_queens_size(6, 6, 7, max_step=10000,
-                                       power=None, exec_all=True))
+    queen_pos = eq.calculate_max_queen_size(
+        BOARD_HEIGHT, BOARD_WIDTH, POWER, MAX_STEP)
+
     elapsed_time = time.time() - start_time
-    print(elapsed_time)
+
+    print()
+    print('Execute time: ' + str(elapsed_time))
+    print('Result max size: ' + str(len(queen_pos)))
+    print(sorted(list(queen_pos)))
