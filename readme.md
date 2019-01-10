@@ -1,6 +1,6 @@
-# Eight problem
+# Eight queen problem
 
-## Eight problem variant
+## Eight queen problem variant
 
     Given 
     1. Board with height and width
